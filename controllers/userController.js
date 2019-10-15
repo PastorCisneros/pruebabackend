@@ -27,23 +27,25 @@ const login = (request, response) => {
     db.pool.query('SELECT * FROM public.users WHERE email=$1',[email],(error, results) => {
         if (error){
             response.status(400).send(error);
-
         }
         else{
-            //response.status(201).send(results.rows);
             const user = results.rows[0];
             bcrypt.compare(password, user['password'], function(err, res) {
                 if(err){
                     response.status(400).send(error);
                 }
                 else{
+                    
                     var token = jwt.sign({userID:user['user_id'], email:user['email']}, 'minacleo', {
                         expiresIn:'2h'});
-                        response.status(201).send(token);
+                    let tokenRsp = {
+                        "token": token
+                    }
+                    response.status(200).send(tokenRsp);
                 }
             });
         }
-    })
+    });
 }
 
 
